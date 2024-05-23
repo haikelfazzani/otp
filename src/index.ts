@@ -1,7 +1,7 @@
 import { options } from "./types";
 
 export function base32ToBytes(key: string) {
-  key = key.replace(/=/g, '');
+  key = key.replace(/=\./g, '');
   const base32Chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
 
   let bits = '';
