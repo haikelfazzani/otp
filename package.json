@@ -1,7 +1,7 @@
 {
   "name": "one-time-pass",
-  "description": "TOTP algorithm based on RFC 6238.",
-  "version": "1.0.0",
+  "description": "Zero dependencies Node/Browser module for TOPT and HOPT one-time password (OTP) generator based on rfc6238 and rfc4226",
+  "version": "1.0.1",
   "author": "Haikel Fazzani",
   "type": "module",
   "browser": "dist/index.umd.js",
@@ -27,8 +27,9 @@
   "files": [
     "dist"
   ],
-  "license": "ISC",
+  "license": "GPL-3.0-only",
   "keywords": [
+    "one-time password",
     "topt",
     "htop",
     "opt",
