@@ -1,7 +1,6 @@
-# TOTP hash based on RFC 6238
+# one-time password (OTP) generator
 
-TOTP is a 2FA method that leverages a time-based mechanism to generate one-time
-passwords.
+Node/Browser module for TOPT and HOPT one-time password (OTP) generator based on rfc6238 and rfc4226
 
 ## Usage
 
@@ -11,14 +10,14 @@ import { generateTOPT } from "opt-ts";
 
 (async () => {
 
-  const options = {
+  const defaultOptions = {
     hash: 'sha-1',
     timeStep: 30,
     digits: 6,
     timestamp: Date.now()
   }
 
-  const code = await generateTOPT("key", options?);
+  const code = await generateTOPT("key", defaultOptions?);
   console.log(code);
 })();
 ```
@@ -28,9 +27,9 @@ import { generateTOPT } from "opt-ts";
 import { generateHOPT } from "opt-ts";
 
 (async () => {
+  const counter = 14653
   const hash = 'sha-1'
   const digits = 6
-  const counter = 14653
 
   const code = await generateHOPT("secretKey", counter, hash, digits);
   console.log(code);
