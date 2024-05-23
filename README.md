@@ -1,12 +1,20 @@
 # one-time password (OTP) generator
 
-Node/Browser module for TOPT and HOPT one-time password (OTP) generator based on rfc6238 and rfc4226
+Zero dependencies Node/Browser module for TOPT and HOPT one-time password (OTP) generator based on rfc6238 and rfc4226
+
+<div align="center" style="width:100%; text-align:center; margin-bottom:20px;">
+  <img src="https://badgen.net/bundlephobia/minzip/one-time-pass" alt="one-time-pass" />
+  <img src="https://badgen.net/bundlephobia/dependency-count/one-time-pass" alt="one-time-pass" />
+  <img src="https://badgen.net/npm/v/one-time-pass" alt="one-time-pass" />
+  <img src="https://badgen.net/npm/dt/one-time-pass" alt="one-time-pass" />
+  <img src="https://data.jsdelivr.com/v1/package/npm/one-time-pass/badge" alt="one-time-pass"/>
+</div> 
 
 ## Usage
 
 **generate TOPT**
 ```js
-import { generateTOPT } from "opt-ts";
+import { generateTOPT } from "one-time-pass";
 
 (async () => {
 
@@ -24,7 +32,7 @@ import { generateTOPT } from "opt-ts";
 
 **generate HOPT**
 ```js
-import { generateHOPT } from "opt-ts";
+import { generateHOPT } from "one-time-pass";
 
 (async () => {
   const counter = 14653
@@ -36,10 +44,25 @@ import { generateHOPT } from "opt-ts";
 })();
 ```
 
+Or include it via jsDelivr CDN (UMD):
+```html
+<script src="https://cdn.jsdelivr.net/npm/one-time-pass/dist/index.umd.js"></script>
+<!-- Access via global object : window.OPT -->
+
+window.OPT.generateTOPT("key");
+```
+
+
 ## Ressouces
 
 - [rfc6238](https://datatracker.ietf.org/doc/html/rfc6238)
 - [rfc4226](https://datatracker.ietf.org/doc/html/rfc4226)
+
+### Notes
+- All pull requests are welcome, feel free.
+
+### Author
+- [Haikel Fazzani](https://github.com/haikelfazzani)
 
 # License
 GNU GENERAL PUBLIC LICENSE V3

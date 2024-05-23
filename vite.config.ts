@@ -7,7 +7,7 @@ export default defineConfig({
       entry: [
         resolve(__dirname, "src/index.ts"),
       ],
-      name: "Demo",
+      name: "OPT",
       formats: ["es", "cjs", "umd"],
       fileName: (format) => `index.${format}.js`,
     }

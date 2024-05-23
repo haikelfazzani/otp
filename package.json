@@ -1,5 +1,5 @@
 {
-  "name": "opt-ts",
+  "name": "one-time-pass",
   "description": "TOTP algorithm based on RFC 6238.",
   "version": "1.0.0",
   "author": "Haikel Fazzani",
