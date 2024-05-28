@@ -1,6 +1,6 @@
 # one-time password (OTP) generator
 
-Zero dependencies Node/Browser module for TOPT and HOPT one-time password (OTP) generator based on rfc6238 and rfc4226
+Zero dependencies 🔐 Node/Browser module for TOTP and HOTP generator based on RFC 6238 and RFC 4226 🗝️
 
 <div align="center" style="width:100%; text-align:center; margin-bottom:20px;">
   <img src="https://badgen.net/bundlephobia/minzip/one-time-pass" alt="one-time-pass" />
@@ -12,7 +12,7 @@ Zero dependencies Node/Browser module for TOPT and HOPT one-time password (OTP) 
 
 ## Usage
 
-**generate TOPT**
+**generate TOTP**
 ```js
 import { generateTOTP } from "one-time-pass";
 
@@ -30,7 +30,7 @@ import { generateTOTP } from "one-time-pass";
 })();
 ```
 
-**generate HOPT**
+**generate HOTP**
 ```js
 import { generateHOTP } from "one-time-pass";
 
@@ -47,9 +47,9 @@ import { generateHOTP } from "one-time-pass";
 Or include it via jsDelivr CDN (UMD):
 ```html
 <script src="https://cdn.jsdelivr.net/npm/one-time-pass/dist/index.umd.js"></script>
-<!-- Access via global object : window.OPT -->
+<!-- Access via global object : window.OTP -->
 
-window.OPT.generateTOPT("key");
+window.OTP.generateTOTP("key");
 ```
 
 

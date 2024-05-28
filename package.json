@@ -1,7 +1,7 @@
 {
   "name": "one-time-pass",
-  "description": "Zero dependencies Node/Browser module for TOPT and HOPT one-time password (OTP) generator based on rfc6238 and rfc4226",
-  "version": "1.0.4",
+  "description": "Zero dependencies Node/Browser module for TOTP and HOTP generator based on RFC 6238 and RFC 4226",
+  "version": "1.0.5",
   "author": "Haikel Fazzani",
   "type": "module",
   "browser": "dist/index.umd.js",
@@ -30,12 +30,12 @@
   "license": "GPL-3.0-only",
   "keywords": [
     "one-time password",
-    "topt",
-    "htop",
-    "opt",
+    "totp",
+    "hotp",
+    "otp",
     "2fa"
   ],
-  "repository": "https://github.com/haikelfazzani/opt",
-  "bugs": "https://github.com/haikelfazzani/opt/issues",
-  "homepage": "https://github.com/haikelfazzani/opt#readme"
+  "repository": "https://github.com/haikelfazzani/otp",
+  "bugs": "https://github.com/haikelfazzani/otp/issues",
+  "homepage": "https://github.com/haikelfazzani/otp#readme"
 }
