@@ -1,7 +1,7 @@
 {
   "name": "one-time-pass",
   "description": "Zero dependencies Node/Browser module for TOPT and HOPT one-time password (OTP) generator based on rfc6238 and rfc4226",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "author": "Haikel Fazzani",
   "type": "module",
   "browser": "dist/index.umd.js",

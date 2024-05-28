@@ -14,32 +14,32 @@ Zero dependencies Node/Browser module for TOPT and HOPT one-time password (OTP) 
 
 **generate TOPT**
 ```js
-import { generateTOPT } from "one-time-pass";
+import { generateTOTP } from "one-time-pass";
 
 (async () => {
 
   const defaultOptions = {
     hash: 'sha-1',
-    timeStep: 30,
+    timeStep: 30, // epoch interval
     digits: 6,
     timestamp: Date.now()
   }
 
-  const code = await generateTOPT("key", defaultOptions?);
+  const code = await generateTOTP("key", defaultOptions?);
   console.log(code);
 })();
 ```
 
 **generate HOPT**
 ```js
-import { generateHOPT } from "one-time-pass";
+import { generateHOTP } from "one-time-pass";
 
 (async () => {
   const counter = 14653
   const hash = 'sha-1'
   const digits = 6
 
-  const code = await generateHOPT("secretKey", counter, hash, digits);
+  const code = await generateHOTP("secretKey", counter, hash, digits);
   console.log(code);
 })();
 ```
