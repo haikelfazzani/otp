@@ -15,6 +15,7 @@ temp
 rollup.config.mjs
 tsconfig.json
 tsconfig.node.json
+index.html
 v.js
 # Coverage
 coverage

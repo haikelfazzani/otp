@@ -7,7 +7,7 @@ export default defineConfig({
       entry: [
         resolve(__dirname, "src/index.ts"),
       ],
-      name: "OTP",
+      name: "otp",
       formats: ["es", "cjs", "umd"],
       fileName: (format) => `index.${format}.js`,
     }
