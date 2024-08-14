@@ -3,6 +3,8 @@
 Zero dependencies 🔐 Node/Browser module for TOTP and HOTP generator based on
 RFC 6238 and RFC 4226 🗝️
 
+[tryit](https://jsfiddle.net/HaikelFazzani/e5dz6g2x/2/)
+
 <div align="center" style="width:100%; text-align:center; margin-bottom:20px;">
   <img src="https://badgen.net/bundlephobia/minzip/one-time-pass" alt="one-time-pass" />
   <img src="https://badgen.net/bundlephobia/dependency-count/one-time-pass" alt="one-time-pass" />
@@ -21,7 +23,7 @@ import { generateTOTP } from "one-time-pass";
 (async () => {
 
   const defaultOptions = {
-    hash: 'sha-1',
+    hash: 'SHA-1',
     timeStep: 30, // epoch interval
     digits: 6,
     timestamp: Date.now()
@@ -39,7 +41,7 @@ import { generateHOTP } from "one-time-pass";
 
 (async () => {
   const counter = 14653;
-  const hash = "sha-1";
+  const hash = "SHA-1";
   const digits = 6;
 
   const code = await generateHOTP("secretKey", counter, hash, digits);
