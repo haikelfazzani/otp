@@ -1,5 +1,5 @@
-const { describe, expect, test } = require('@jest/globals');
-const { generateTOTP, generateHOTP } = require('../dist/index.cjs');
+import { describe, expect, test } from '@jest/globals';
+import { generateTOTP, generateHOTP } from '../src/index';
 
 describe('generate HOPT and TOPT code', () => {
   // tests from https://github.com/hectorm/otpauth/blob/master/test/test.mjs
