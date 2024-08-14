@@ -7,7 +7,6 @@ npm-debug.log*
 # Dependencies
 node_modules/
 src
-tests
 build
 steps.md
 notes

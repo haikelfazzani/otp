@@ -1,9 +1,10 @@
 # one-time password (OTP) generator
 
-Zero dependencies 🔐 Node/Browser module for TOTP and HOTP generator based on
+🔐 Deno/Bun/Node/Browser module for TOTP and HOTP generator based on
 RFC 6238 and RFC 4226 🗝️
 
-[tryit](https://jsfiddle.net/HaikelFazzani/e5dz6g2x/2/)
+- Zero dependencies: Works seamlessly across different environments without requiring additional libraries.
+- Supports TOTP and HOTP: Generate both time-based and counter-based one-time passwords
 
 <div align="center" style="width:100%; text-align:center; margin-bottom:20px;">
   <img src="https://badgen.net/bundlephobia/minzip/one-time-pass" alt="one-time-pass" />
@@ -13,7 +14,32 @@ RFC 6238 and RFC 4226 🗝️
   <img src="https://data.jsdelivr.com/v1/package/npm/one-time-pass/badge" alt="one-time-pass"/>
 </div>
 
-## Usage
+Try it out on JSFiddle: [Live Demo](https://jsfiddle.net/HaikelFazzani/e5dz6g2x/2/)
+
+# Install
+
+```
+npm i one-time-pass
+```
+
+# Usage
+
+## Import
+
+```js
+import { generateTOTP } from "one-time-pass";
+// Deno 
+import { generateTOTP } from "npm:one-time-pass";
+// Nodejs
+const { generateTOTP } = require("one-time-pass");
+
+// Or include it via CDN
+<script src="https://cdn.jsdelivr.net/npm/one-time-pass/dist/index.umd.js"></script>
+
+window.otp.generateTOTP("key");
+```
+
+## Examples
 
 **generate TOTP**
 
@@ -49,15 +75,6 @@ import { generateHOTP } from "one-time-pass";
 })();
 ```
 
-Or include it via jsDelivr CDN (UMD):
-
-```html
-<script src="https://cdn.jsdelivr.net/npm/one-time-pass/dist/index.umd.js"></script>
-<!-- Access via global object : window.otp -->
-
-window.otp.generateTOTP("key");
-```
-
 ## Ressouces
 
 - [rfc6238](https://datatracker.ietf.org/doc/html/rfc6238)
@@ -65,7 +82,7 @@ window.otp.generateTOTP("key");
 
 ### Notes
 
-- All pull requests are welcome, feel free.
+- We welcome pull requests! Feel free to contribute to this project.
 
 ### Author
 
