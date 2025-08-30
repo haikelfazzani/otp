@@ -11,7 +11,7 @@ export async function generateSecret(length = 20): Promise<string> {
 
 export async function generateHOTP(secretKey: string, options?: HOTPOptions): Promise<string> {
 
-  const defaults = { algorithm: 'SHA-1' as HmacAlgorithm, digits: 6, counter: 1 };
+  const defaults = { algorithm: 'SHA-1', digits: 6, counter: 1 };
   const merged = { ...defaults, ...options } as HOTPOptions;
 
   if (!secretKey || typeof secretKey !== 'string') {
@@ -43,9 +43,12 @@ export async function generateHOTP(secretKey: string, options?: HOTPOptions): Pr
   msg[7] = low & 0xff;
 
   const secretBytes = base32ToBytes(secretKey);
-  const crypto = await getCrypto();
-  const key = await crypto.subtle.importKey("raw", secretBytes, { name: "HMAC", hash: { name: merged.algorithm } }, false, ["sign"]);
-  const macBuf = await crypto.subtle.sign("HMAC", key, msg);
+  const subtle = (await getCrypto()).subtle;
+  const key = await subtle.importKey("raw", secretBytes, {
+    name: "HMAC",
+    hash: { name: merged.algorithm }
+  }, false, ["sign"]);
+  const macBuf = await subtle.sign("HMAC", key, msg);
   const mac = new Uint8Array(macBuf);
   return truncate(mac, merged.digits);
 }
@@ -78,7 +81,7 @@ export function generateTOTP(secretKey: string, options: Partial<TOTPOptions> = 
  * @returns A promise that resolves to the delta of the matching window (`-1`, `0`, `1`, etc.) if valid, or `null` if invalid.
  */
 export async function validate(token: string, secretKey: string, options: Partial<TOTPValidateOptions> = {}): Promise<number | null> {
-  const defaults = { algorithm: 'SHA-1' as HmacAlgorithm, period: 30, digits: 6, epoch: Date.now(), window: 1 };
+  const defaults = { algorithm: 'SHA-1', period: 30, digits: 6, epoch: Date.now(), window: 1 };
   const merged = { ...defaults, ...options };
 
   if (typeof token !== 'string' || !/^\d+$/.test(token) || token.length !== merged.digits) {
@@ -87,8 +90,8 @@ export async function validate(token: string, secretKey: string, options: Partia
 
   // Import key once for all validations
   const secretBytes = base32ToBytes(secretKey);
-  const crypto = await getCrypto();
-  const key = await crypto.subtle.importKey("raw", secretBytes, { name: "HMAC", hash: { name: merged.algorithm } }, false, ["sign"]);
+  const subtle = (await getCrypto()).subtle;
+  const key = await subtle.importKey("raw", secretBytes, { name: "HMAC", hash: { name: merged.algorithm } }, false, ["sign"]);
   const currentCounter = Math.floor((merged.epoch / 1000) / merged.period);
 
   for (let i = -merged.window; i <= merged.window; i++) {
@@ -108,7 +111,7 @@ export async function validate(token: string, secretKey: string, options: Partia
     msg[6] = (low >>> 8) & 0xff;
     msg[7] = low & 0xff;
 
-    const macBuf = await crypto.subtle.sign("HMAC", key, msg);
+    const macBuf = await subtle.sign("HMAC", key, msg);
     const mac = new Uint8Array(macBuf);
     const expectedToken = truncate(mac, merged.digits);
 
