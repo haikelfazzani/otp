@@ -5,17 +5,15 @@ HOTP and TOTP codes, compliant with RFC 4226 and RFC 6238. 🗝️
 
 ---
 
-<div align="center" style="width:100%; text-align:center; margin-bottom:20px;"> 
-<img src="[https://badgen.net/bundlephobia/minzip/one-time-pass](https://badgen.net/bundlephobia/minzip/one-time-pass)"
-alt="Bundle Size"> <img
-src="[https://badgen.net/bundlephobia/dependency-count/one-time-pass](https://badgen.net/bundlephobia/dependency-count/one-time-pass)"
-alt="Dependency Count"> <img
-src="[https://badgen.net/npm/v/one-time-pass](https://badgen.net/npm/v/one-time-pass)"
-alt="NPM Version" > <img
-src="[https://badgen.net/npm/dt/one-time-pass](https://badgen.net/npm/dt/one-time-pass)"
-alt="NPM Downloads" > <img
-src="[https://data.jsdelivr.com/v1/package/npm/one-time-pass/badge](https://data.jsdelivr.com/v1/package/npm/one-time-pass/badge)"
-alt="JSDelivr Hits"> </div>
+<div align="center" style="width:100%; text-align:center; margin-bottom:20px;">
+  <img src="https://badgen.net/bundlephobia/minzip/one-time-pass" alt="one-time-pass" />
+  <img src="https://badgen.net/bundlephobia/dependency-count/one-time-pass" alt="one-time-pass" />
+  <img src="https://badgen.net/npm/v/one-time-pass" alt="one-time-pass" />
+  <img src="https://badgen.net/npm/dt/one-time-pass" alt="one-time-pass" />
+  <img src="https://data.jsdelivr.com/v1/package/npm/one-time-pass/badge" alt="one-time-pass"/>
+</div>
+
+Try it out on JSFiddle: [Live Demo](https://codepen.io/haikelfazzani/pen/pvjxdyp)
 
 ### ✨ Features
 
@@ -61,19 +59,11 @@ Use the secret key to generate a time-based token.
 ```javascript
 import { generateTOTP } from "one-time-pass";
 
-// Use the secret generated in the previous step
-const token = await generateTOTP(secret);
-
-console.log("Your TOTP token is:", token); // e.g., '287082'
-```
-
-You can also customize the generation options:
-
-```javascript
 const tokenWithOptions = await generateTOTP(secret, {
-  algorithm: "SHA-256",
-  digits: 8,
-  period: 60, // 60 seconds
+  algorithm: "SHA-1",
+  digits: 6,
+  period: 30, // 30 seconds
+  epoch: Date.now(),
 });
 ```
 
@@ -106,9 +96,8 @@ increment the counter for each use.
 ```javascript
 import { generateHOTP } from "one-time-pass";
 
-const counter = 1;
-const hotpToken = await generateHOTP(secret, counter);
-
+// secretKey: string, counter: number, algorithm: 'SHA-1', digits = 6
+const hotpToken = await generateHOTP("secret", 1, 'SHA-1', 6);
 console.log("Your HOTP token is:", hotpToken);
 ```
 
@@ -124,20 +113,20 @@ console.log("Your HOTP token is:", hotpToken);
 | `validate`       | `(token: string, secret: string, options?: TOTPValidateOptions)` | `Promise<number \| null>` | Validates a TOTP token and returns the matched delta or null. |
 
 ```ts
-type HmacAlgorithm = 'SHA-1' | 'SHA-256' | 'SHA-512';
+type HmacAlgorithm = "SHA-1" | "SHA-256" | "SHA-512";
 
 type TOTPOptions = {
   algorithm?: HmacAlgorithm;
-  period?: number;      // seconds, default: 30
-  digits?: number;      // default: 6
-  epoch?: number;       // ms, default: Date.now()
+  period?: number; // seconds, default: 30
+  digits?: number; // default: 6
+  epoch?: number; // ms, default: Date.now()
 };
-
 
 type TOTPValidateOptions = TOTPOptions & {
   window?: number;
 };
 ```
+
 ---
 
 ### 🌐 CDN Usage
@@ -145,7 +134,9 @@ type TOTPValidateOptions = TOTPOptions & {
 You can also use the library directly in an HTML file via a CDN.
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/one-time-pass/dist/index.umd.js"></script>
+<script
+  src="https://cdn.jsdelivr.net/npm/one-time-pass/dist/index.umd.js"
+></script>
 <script>
   (async () => {
     // The library is available on the `window.otp` object

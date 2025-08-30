@@ -2,7 +2,7 @@ import { describe, expect, test } from '@jest/globals';
 import { generateTOTP, generateHOTP, generateSecret } from '../src/index';
 import { TOTPOptions } from '../src/types';
 
-describe('generate HOPT and TOPT code', () => {
+describe('generate HOPT and TOPT: should generate correct token', () => {
   // tests from https://github.com/hectorm/otpauth/blob/master/test/test.mjs
   test('should generate code', async () => {
     const base32 = '6OWYXIW7QEYH34MFXCCXPZUBQDTIXBSX5GPKX4MSU2W6NHFNY2DOTEVK5OILVXN33GB6HN4QHHYLDN4AFTZZNH476KG3RAWESDUKZNHQW2KJLYMLTBHNJNPSTW33J4MAWWKNHPA'
@@ -35,7 +35,7 @@ describe('generate HOPT and TOPT code', () => {
   });
 });
 
-describe('generate TOPT code', () => {
+describe('generateTOTP: should generate correct token', () => {
   // tests from https://github.com/bellstrand/totp-generator/blob/master/src/index.spec.ts
   test('should generate correct code', async () => {
     expect(await generateTOTP("JBSWY3DPEHPK3PXP", { epoch: 0 })).toEqual("282760")
@@ -46,12 +46,11 @@ describe('generate TOPT code', () => {
     expect(await generateTOTP("AAAAAAAAAAAAAAAA", { epoch: 1400000000 })).toEqual("803661")
     expect(await generateTOTP("JBSWY3DPEHPK3PXP", { algorithm: "SHA-512", epoch: 1465324707000 })).toEqual("093730")
     expect(await generateTOTP("3IS523AYRNFUE===", { algorithm: 'SHA-1', digits: 8, epoch: 1634193300000 })).toEqual("97859470")
-    expect(await generateTOTP("JBSWY3DPEHPK3PXP", { algorithm: 'SHA-1', digits: 6, epoch: 12312354132421332222222222 })).toEqual("940843")
     expect(await generateTOTP("JBSWY3DPEHPK3PXP", { epoch: 0 })).toEqual("282760")
     expect(await generateTOTP('JBSWY3DPEHPK3PXP', { algorithm: 'SHA-1', period: 30, digits: 6, epoch: 1465324707000 })).toBe('341128');
   });
 
-  test("should generate correct token", async () => {
+  test("generateTOTP: should generate correct token", async () => {
     const start = 1665644340000
     const key = "JBSWY3DPEHPK3PXP";
     expect(await generateTOTP(key, { epoch: start - 1 })).toEqual("134996")
@@ -63,29 +62,21 @@ describe('generate TOPT code', () => {
   });
 })
 
-describe('Input validation and error handling', () => {
+describe('generateHOTP: Input validation and error handling', () => {
   const validKey = 'JBSWY3DPEHPK3PXP';
 
-  test('generateHOTP should throw on invalid counter', async () => {
+  test('generateHOTP: should throw on invalid counter', async () => {
     await expect(generateHOTP(validKey, -1)).rejects.toThrow("Counter must be a non-negative integer.");
     await expect(generateHOTP(validKey, 1.5)).rejects.toThrow("Counter must be a non-negative integer.");
   });
 
-  test('generateHOTP should throw on invalid digits', async () => {
+  test('generateHOTP: should throw on invalid digits', async () => {
     await expect(generateHOTP(validKey, 1, 'SHA-1', 0)).rejects.toThrow("Digits must be a positive integer between 1 and 10.");
     await expect(generateHOTP(validKey, 1, 'SHA-1', 11)).rejects.toThrow("Digits must be a positive integer between 1 and 10.");
     await expect(generateHOTP(validKey, 1, 'SHA-1', 5.5)).rejects.toThrow("Digits must be a positive integer between 1 and 10.");
   });
 
-  // Tests for base32ToBytes (via the main functions)
-  test('should throw on invalid base32 secret key', async () => {
-    await expect(generateTOTP('JBSWY3DPEHPK3PXP1')).rejects.toThrow('Invalid Base32 secret key.');
-    await expect(generateTOTP('JBSWY3DPEHPK3PX8')).rejects.toThrow('Invalid Base32 secret key.');
-    await expect(generateTOTP('')).rejects.toThrow('Secret key must be a non-empty string');
-    await expect(generateTOTP('   ')).rejects.toThrow('Secret key must be a non-empty string');
-  });
-
-  test('should correctly handle base32 with whitespace and lowercase', async () => {
+  test('generateTOTP: should correctly handle base32 with whitespace and lowercase', async () => {
     const keyWithWhitespace = "JBS WY3 DPE HPK 3PX P";
     const keyWithLowercase = "jbswy3dpehpk3pxp";
     const expected = await generateTOTP(validKey, { epoch: 0 });

@@ -1,4 +1,4 @@
-export type HmacAlgorithm = 'SHA-1' | 'SHA-256' | 'SHA-512';
+export type HmacAlgorithm = 'SHA-1' | 'SHA-256' | 'SHA-384' | 'SHA-512';
 
 export type TOTPOptions = {
   algorithm?: HmacAlgorithm;

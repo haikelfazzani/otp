@@ -1,10 +1,11 @@
 const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
 
-/**
- * Compares two strings in a way that is resistant to timing attacks.
- */
 export function timingSafeEqual(a: string, b: string): boolean {
   if (a.length !== b.length) {
+    let dummy = 0;
+    for (let i = 0; i < Math.max(a.length, b.length); i++) {
+      dummy |= i;
+    }
     return false;
   }
 
@@ -12,40 +13,43 @@ export function timingSafeEqual(a: string, b: string): boolean {
   for (let i = 0; i < a.length; i++) {
     result |= a.charCodeAt(i) ^ b.charCodeAt(i);
   }
-
   return result === 0;
 }
 
-export function truncate(bytes: Uint8Array, digits: number): string {
-  if (!Number.isInteger(digits) || digits <= 0) {
-    throw new Error("Digits must be a positive integer.");
-  }
-  if (!bytes || bytes.length < 4) {
-    throw new Error("HMAC must be at least 4 bytes.");
+//  RFC 4226, Section 5.3
+export function truncate(hmacResult: Uint8Array, digits: number): string {
+  if (!Number.isInteger(digits) || digits < 1 || digits > 10) {
+    throw new Error('Digits must be a positive integer between 1 and 10.');
   }
 
-  const offset = bytes[bytes.length - 1] & 0x0f;
-  if (offset + 3 >= bytes.length) {
-    throw new Error("Invalid dynamic offset for truncation.");
+  if (hmacResult.length < 4) {
+    throw new Error("HMAC result is too short");
   }
 
-  const code =
-    ((bytes[offset] & 0x7f) << 24) |
-    ((bytes[offset + 1] & 0xff) << 16) |
-    ((bytes[offset + 2] & 0xff) << 8) |
-    (bytes[offset + 3] & 0xff);
+  const offset = hmacResult[hmacResult.length - 1] & 0x0f;
+  if (offset > hmacResult.length - 4) {
+    throw new Error("Calculated offset is out of bounds for the HMAC result");
+  }
 
-  const divisor = 10 ** digits;
-  return String(code % divisor).padStart(digits, '0');
+  const view = new DataView(hmacResult.buffer, hmacResult.byteOffset + offset, 4);
+  const binaryCode = view.getUint32(0) & 0x7fffffff;
+  const otp = binaryCode % (10 ** digits);
+  return otp.toString().padStart(digits, '0');
 }
 
 export function base32ToBytes(key: string): Uint8Array {
-  key = key.trim();
   if (!key || typeof key !== 'string') {
     throw new Error("Secret key must be a non-empty string");
   }
 
+  key = key.trim();
+
+  if (key.length < 1) {
+    throw new Error("Secret key must be a non-empty string");
+  }
+
   const cleaned = key.replace(/\s+/g, '').replace(/=/g, '').toUpperCase();
+  // RFC 4648 specifies that '0', '1', '8', and '9' are not valid Base32 characters
   if (!/^[A-Z2-7]+$/.test(cleaned)) {
     throw new Error('Invalid Base32 secret key.');
   }
@@ -71,38 +75,43 @@ export function base32ToBytes(key: string): Uint8Array {
 }
 
 export function bytesToBase32(bytes: Uint8Array): string {
+  if (!bytes || bytes.length === 0) return '';
+
+  const result: string[] = [];
   let bits = 0;
   let value = 0;
-  let output = '';
 
   for (let i = 0; i < bytes.length; i++) {
     value = (value << 8) | bytes[i];
     bits += 8;
     while (bits >= 5) {
-      output += alphabet[(value >>> (bits - 5)) & 31];
+      result.push(alphabet[(value >>> (bits - 5)) & 31]);
       bits -= 5;
     }
   }
 
   if (bits > 0) {
-    output += alphabet[(value << (5 - bits)) & 31];
+    result.push(alphabet[(value << (5 - bits)) & 31]);
   }
 
-  return output;
+  const output = result.join('');
+  const paddingCount = (8 - (output.length % 8)) % 8;
+  return output + '='.repeat(paddingCount);
 }
 
 export async function getCrypto(): Promise<Crypto> {
-  const globalCrypto = (globalThis as any).crypto as Crypto | undefined;
-  if (globalCrypto && globalCrypto.subtle) {
-    return globalCrypto;
+  // Browser and Deno
+  if (typeof globalThis !== 'undefined' && globalThis.crypto?.subtle) {
+    return globalThis.crypto;
   }
+
+  // Node.js fallback
   try {
     const { webcrypto } = await import('node:crypto');
-    if (webcrypto && (webcrypto as any).subtle) {
+    if (webcrypto?.subtle) {
       return webcrypto as unknown as Crypto;
     }
-  } catch (e) {
-    // Fall through to the error
-  }
+  } catch { }
+
   throw new Error('Web Crypto API (subtle) is not available in this environment');
 }
