@@ -5,18 +5,17 @@ HOTP and TOTP codes, compliant with RFC 4226 and RFC 6238. 🗝️
 
 ---
 
-\<div align="center" style="width:100%; text-align:center;
-margin-bottom:20px;"\> \<img
-src="[https://badgen.net/bundlephobia/minzip/one-time-pass](https://badgen.net/bundlephobia/minzip/one-time-pass)"
-alt="Bundle Size" /\> \<img
+<div align="center" style="width:100%; text-align:center; margin-bottom:20px;"> 
+<img src="[https://badgen.net/bundlephobia/minzip/one-time-pass](https://badgen.net/bundlephobia/minzip/one-time-pass)"
+alt="Bundle Size"> <img
 src="[https://badgen.net/bundlephobia/dependency-count/one-time-pass](https://badgen.net/bundlephobia/dependency-count/one-time-pass)"
-alt="Dependency Count" /\> \<img
+alt="Dependency Count"> <img
 src="[https://badgen.net/npm/v/one-time-pass](https://badgen.net/npm/v/one-time-pass)"
-alt="NPM Version" /\> \<img
+alt="NPM Version" > <img
 src="[https://badgen.net/npm/dt/one-time-pass](https://badgen.net/npm/dt/one-time-pass)"
-alt="NPM Downloads" /\> \<img
+alt="NPM Downloads" > <img
 src="[https://data.jsdelivr.com/v1/package/npm/one-time-pass/badge](https://data.jsdelivr.com/v1/package/npm/one-time-pass/badge)"
-alt="JSDelivr Hits"/\> \</div\>
+alt="JSDelivr Hits"> </div>
 
 ### ✨ Features
 
