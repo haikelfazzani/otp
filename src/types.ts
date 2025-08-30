@@ -1,5 +1,11 @@
 export type HmacAlgorithm = 'SHA-1' | 'SHA-256' | 'SHA-384' | 'SHA-512';
 
+export type HOTPOptions = {
+  algorithm?: HmacAlgorithm;
+  digits?: number;      // default: 6
+  counter?: number;
+};
+
 export type TOTPOptions = {
   algorithm?: HmacAlgorithm;
   period?: number;      // seconds, default: 30

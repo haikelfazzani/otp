@@ -1,5 +1,5 @@
-// Zero dependencies Node 18+/Deno/Browser module for TOTP and HOTP generator based on RFC 6238 and RFC 4226
-import { HmacAlgorithm, TOTPOptions, TOTPValidateOptions } from './types';
+// Node 18+/Deno/Browser TOTP and HOTP generator based on RFC 6238 and RFC 4226
+import { HOTPOptions, HmacAlgorithm, TOTPOptions, TOTPValidateOptions } from './types';
 import { base32ToBytes, bytesToBase32, getCrypto, truncate, timingSafeEqual } from './helpers';
 
 export async function generateSecret(length = 20): Promise<string> {
@@ -9,23 +9,18 @@ export async function generateSecret(length = 20): Promise<string> {
   return bytesToBase32(randomBytes);
 }
 
-/**
- * Generates an HMAC-based One-Time Password (HOTP).
- * @param secretKey The Base32 encoded secret key.
- * @param counter The counter value.
- * @param algorithm The HMAC hash algorithm to use (default: 'SHA-1').
- * @param digits The number of digits in the OTP (default: 6).
- * @returns A promise that resolves to the HOTP string.
- */
-export async function generateHOTP(secretKey: string, counter: number, algorithm: HmacAlgorithm = 'SHA-1', digits = 6): Promise<string> {
+export async function generateHOTP(secretKey: string, options?: HOTPOptions): Promise<string> {
+
+  const defaults = { algorithm: 'SHA-1' as HmacAlgorithm, digits: 6, counter: 1 };
+  const merged = { ...defaults, ...options } as HOTPOptions;
 
   if (!secretKey || typeof secretKey !== 'string') {
     throw new Error("Secret key must be a non-empty string");
   }
 
-  if (!Number.isInteger(counter) || counter < 0) throw new Error("Counter must be a non-negative integer.");
+  if (!Number.isInteger(merged.counter) || merged.counter < 0) throw new Error("Counter must be a non-negative integer.");
 
-  if (!Number.isInteger(digits) || digits < 1 || digits > 10) {
+  if (!Number.isInteger(merged.digits) || merged.digits < 1 || merged.digits > 10) {
     throw new Error("Digits must be a positive integer between 1 and 10.");
   }
 
@@ -34,8 +29,8 @@ export async function generateHOTP(secretKey: string, counter: number, algorithm
 
   // Convert number to 8-byte big-endian array without BigInt
   // Handle the full 64-bit range properly
-  const high = Math.floor(counter / 0x100000000); // Upper 32 bits
-  const low = counter % 0x100000000; // Lower 32 bits
+  const high = Math.floor(merged.counter / 0x100000000); // Upper 32 bits
+  const low = merged.counter % 0x100000000; // Lower 32 bits
 
   // Fill the 8-byte array in big-endian order
   msg[0] = (high >>> 24) & 0xff;
@@ -49,18 +44,12 @@ export async function generateHOTP(secretKey: string, counter: number, algorithm
 
   const secretBytes = base32ToBytes(secretKey);
   const crypto = await getCrypto();
-  const key = await crypto.subtle.importKey("raw", secretBytes, { name: "HMAC", hash: { name: algorithm } }, false, ["sign"]);
+  const key = await crypto.subtle.importKey("raw", secretBytes, { name: "HMAC", hash: { name: merged.algorithm } }, false, ["sign"]);
   const macBuf = await crypto.subtle.sign("HMAC", key, msg);
   const mac = new Uint8Array(macBuf);
-  return truncate(mac, digits);
+  return truncate(mac, merged.digits);
 }
 
-/**
- * Generates a Time-based One-Time Password (TOTP).
- * @param secretKey The Base32 encoded secret key.
- * @param options The options for TOTP generation.
- * @returns A promise that resolves to the TOTP string.
- */
 export function generateTOTP(secretKey: string, options: Partial<TOTPOptions> = {}): Promise<string> {
   if (!secretKey || typeof secretKey !== 'string') {
     throw new Error("Secret key must be a non-empty string");
@@ -78,7 +67,7 @@ export function generateTOTP(secretKey: string, options: Partial<TOTPOptions> = 
     throw new Error("Counter value exceeds safe integer range");
   }
 
-  return generateHOTP(secretKey, counter, merged.algorithm, merged.digits);
+  return generateHOTP(secretKey, { counter, algorithm: merged.algorithm, digits: merged.digits });
 }
 
 /**

@@ -13,7 +13,8 @@ HOTP and TOTP codes, compliant with RFC 4226 and RFC 6238. 🗝️
   <img src="https://data.jsdelivr.com/v1/package/npm/one-time-pass/badge" alt="one-time-pass"/>
 </div>
 
-Try it out on JSFiddle: [Live Demo](https://codepen.io/haikelfazzani/pen/pvjxdyp)
+Try it out on JSFiddle:
+[Live Demo](https://codepen.io/haikelfazzani/pen/pvjxdyp)
 
 ### ✨ Features
 
@@ -95,9 +96,11 @@ increment the counter for each use.
 
 ```javascript
 import { generateHOTP } from "one-time-pass";
-
-// secretKey: string, counter: number, algorithm: 'SHA-1', digits = 6
-const hotpToken = await generateHOTP("secret", 1, 'SHA-1', 6);
+const hotpToken = await generateHOTP("secret", {
+  counter: 1,
+  algorithm: "SHA-1",
+  digits: 6,
+});
 console.log("Your HOTP token is:", hotpToken);
 ```
 
@@ -109,11 +112,17 @@ console.log("Your HOTP token is:", hotpToken);
 | ---------------- | ---------------------------------------------------------------- | ------------------------- | ------------------------------------------------------------- |
 | `generateSecret` | `(length?: number)`                                              | `Promise<string>`         | Creates a new Base32 secret key.                              |
 | `generateTOTP`   | `(secret: string, options?: TOTPOptions)`                        | `Promise<string>`         | Generates a time-based OTP.                                   |
-| `generateHOTP`   | `(secret: string, counter: number, algorithm?, digits?)`         | `Promise<string>`         | Generates a counter-based OTP.                                |
+| `generateHOTP`   | `(secret: string, options?:HOTPOptions)`                         | `Promise<string>`         | Generates a counter-based OTP.                                |
 | `validate`       | `(token: string, secret: string, options?: TOTPValidateOptions)` | `Promise<number \| null>` | Validates a TOTP token and returns the matched delta or null. |
 
 ```ts
 type HmacAlgorithm = "SHA-1" | "SHA-256" | "SHA-512";
+
+type HOTPOptions = {
+  algorithm?: HmacAlgorithm;
+  digits?: number; // default: 6
+  counter?: number;
+};
 
 type TOTPOptions = {
   algorithm?: HmacAlgorithm;
