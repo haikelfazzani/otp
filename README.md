@@ -145,16 +145,14 @@ type TOTPValidateOptions = TOTPOptions & {
 You can also use the library directly in an HTML file via a CDN.
 
 ```html
-<script
-  src="https://cdn.jsdelivr.net/npm/one-time-pass/dist/index.umd.js"
-></script>
+<script src="https://cdn.jsdelivr.net/npm/one-time-pass/dist/index.umd.js"></script>
 <script>
   (async () => {
-    // The library is available on the `window.oneTimePass` object
-    const secret = await window.oneTimePass.generateSecret();
+    // The library is available on the `window.otp` object
+    const secret = await window.otp.generateSecret();
     console.log("Secret:", secret);
 
-    const token = await window.oneTimePass.generateTOTP(secret);
+    const token = await window.otp.generateTOTP(secret);
     console.log("Token:", token);
   })();
 </script>
