@@ -1,0 +1,10 @@
+{
+  "name": "one-time-pass",
+  "version": "2.0.0",
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "publish": {
+    "include": ["./*.md", "./dist/index.js", "./dist/types/index.d.ts"]
+  }
+}

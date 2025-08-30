@@ -1,35 +1,40 @@
 {
   "name": "one-time-pass",
-  "description": "Zero dependencies Node/Browser module for TOTP and HOTP generator based on RFC 6238 and RFC 4226",
-  "version": "1.0.7",
+  "description": "Zero dependencies Node/Deno/Bun/Browser module for TOTP and HOTP generator based on RFC 6238 and RFC 4226",
+  "version": "2.0.0",
   "author": "Haikel Fazzani",
+  "private": false,
   "type": "module",
-  "browser": "dist/index.umd.js",
-  "main": "dist/index.cjs.js",
-  "module": "dist/index.es.js",
-  "types": "dist/index.d.ts",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "browser": "./dist/index.umd.js",
+  "types": "./dist/types/index.d.ts",
   "scripts": {
-    "dev": "vite build --watch",
+    "dev": "vite build --minify false",
     "build": "vite build",
-    "build:types": "dts-bundle-generator --config ./dts-bundle-generator.config.ts",
-    "test": "jest"
+    "clean": "rm -rf dist",
+    "test": "node --loader ts-node/esm --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "prepublishOnly": "npm run clean && npm run build",
+    "deno": "deno run --unstable-sloppy-imports --allow-net tests/index.test.ts"
   },
   "devDependencies": {
-    "@jest/globals": "^29.7.0",
-    "@types/jest": "^29.5.12",
-    "@types/node": "^20.12.12",
+    "@jest/globals": "^30.0.5",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^24.3.0",
     "dts-bundle-generator": "^9.5.1",
-    "jest": "^29.7.0",
-    "ts-jest": "^29.2.4",
-    "typescript": "^5.5.4",
-    "vite": "^5.4.0"
+    "jest": "^30.0.5",
+    "ts-jest": "^29.4.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.2",
+    "vite": "^6.3.5",
+    "vite-plugin-dts": "^4.5.4"
   },
   "files": [
     "dist"
   ],
   "license": "GPL-3.0-only",
   "keywords": [
-    "one-time password",
+    "one time password",
     "totp",
     "hotp",
     "otp",
