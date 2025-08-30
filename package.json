@@ -1,7 +1,7 @@
 {
   "name": "one-time-pass",
   "description": "Zero dependencies Node/Deno/Bun/Browser module for TOTP and HOTP generator based on RFC 6238 and RFC 4226",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "author": "Haikel Fazzani",
   "private": false,
   "type": "module",
@@ -13,7 +13,7 @@
     "dev": "vite build --minify false",
     "build": "vite build",
     "clean": "rm -rf dist",
-    "test:helpers":"jest tests/helpers.test.ts",
+    "test:helpers": "jest tests/helpers.test.ts",
     "test": "jest tests/index.test.ts",
     "prepublishOnly": "npm run clean && npm run build",
     "deno": "deno run --unstable-sloppy-imports --allow-net tests/index.test.ts"
@@ -41,7 +41,10 @@
     "otp",
     "2fa"
   ],
-  "repository": "https://github.com/haikelfazzani/otp",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/haikelfazzani/otp.git"
+  },
   "bugs": "https://github.com/haikelfazzani/otp/issues",
   "homepage": "https://github.com/haikelfazzani/otp#readme"
 }
