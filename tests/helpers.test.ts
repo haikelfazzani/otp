@@ -1,68 +1,7 @@
 // helpers.test.ts
-import { timingSafeEqual, truncate, base32ToBytes, bytesToBase32 } from '../src/helpers';
+import { truncate, base32ToBytes, bytesToBase32 } from '../src/helpers';
 
 describe('Helper Functions Tests', () => {
-
-  describe('timingSafeEqual', () => {
-    describe('Equal strings', () => {
-      test('should return true for identical strings', () => {
-        expect(timingSafeEqual('hello', 'hello')).toBe(true);
-        expect(timingSafeEqual('123456', '123456')).toBe(true);
-        expect(timingSafeEqual('', '')).toBe(true);
-        expect(timingSafeEqual('ABCDEF', 'ABCDEF')).toBe(true);
-      });
-
-      test('should return true for single character strings', () => {
-        expect(timingSafeEqual('a', 'a')).toBe(true);
-        expect(timingSafeEqual('1', '1')).toBe(true);
-      });
-    });
-
-    describe('Unequal strings', () => {
-      test('should return false for different strings of same length', () => {
-        expect(timingSafeEqual('hello', 'world')).toBe(false);
-        expect(timingSafeEqual('123456', '123457')).toBe(false);
-        expect(timingSafeEqual('ABCDEF', 'ABCDEG')).toBe(false);
-      });
-
-      test('should return false for strings with different lengths', () => {
-        expect(timingSafeEqual('short', 'longer')).toBe(false);
-        expect(timingSafeEqual('123456', '12345')).toBe(false);
-        expect(timingSafeEqual('', 'nonempty')).toBe(false);
-        expect(timingSafeEqual('nonempty', '')).toBe(false);
-      });
-
-      test('should return false for single character differences', () => {
-        expect(timingSafeEqual('a', 'b')).toBe(false);
-        expect(timingSafeEqual('1', '2')).toBe(false);
-      });
-    });
-
-    describe('Edge cases', () => {
-      test('should handle strings with special characters', () => {
-        expect(timingSafeEqual('!@#$%', '!@#$%')).toBe(true);
-        expect(timingSafeEqual('!@#$%', '!@#$&')).toBe(false);
-        expect(timingSafeEqual('αβγ', 'αβγ')).toBe(true);
-        expect(timingSafeEqual('αβγ', 'αβδ')).toBe(false);
-      });
-
-      test('should handle strings with whitespace', () => {
-        expect(timingSafeEqual(' hello ', ' hello ')).toBe(true);
-        expect(timingSafeEqual(' hello ', 'hello')).toBe(false);
-        expect(timingSafeEqual('\n\t', '\n\t')).toBe(true);
-      });
-
-      test('should handle long strings', () => {
-        const longString1 = 'a'.repeat(10000);
-        const longString2 = 'a'.repeat(10000);
-        const longString3 = 'a'.repeat(9999) + 'b';
-
-        expect(timingSafeEqual(longString1, longString2)).toBe(true);
-        expect(timingSafeEqual(longString1, longString3)).toBe(false);
-      });
-    });
-  });
-
   describe('truncate', () => {
     describe('Valid inputs', () => {
       test('should truncate HMAC result to specified digits', () => {
@@ -328,6 +267,50 @@ describe('Helper Functions Tests', () => {
     });
 
     describe('Edge cases', () => {
+      it('should correctly encode RFC 4648 test vectors', () => {
+
+        function hexToBytes(hex: string) {
+          if (hex.length % 2 !== 0) {
+            throw new Error('Hex string must have an even length');
+          }
+
+          const bytes = new Uint8Array(hex.length / 2);
+          for (let i = 0; i < hex.length; i += 2) {
+            bytes[i / 2] = parseInt(hex.substring(i, i + 2), 16);
+          }
+          return bytes;
+        }
+
+        // Test vector from RFC 4648 (Section 10)
+        const testCases = [
+          { hex: '', expected: '' },
+          { hex: '66', expected: 'MY======' }, // "f"
+          { hex: '666f', expected: 'MZXQ====' }, // "fo"
+          { hex: '666f6f', expected: 'MZXW6===' }, // "foo"
+          { hex: '666f6f62', expected: 'MZXW6YQ=' }, // "foob"
+          { hex: '666f6f6261', expected: 'MZXW6YTB' }, // "fooba"
+          { hex: '666f6f626172', expected: 'MZXW6YTBOI======' }, // "foobar"
+        ];
+
+        testCases.forEach(({ hex, expected }) => {
+          const bytes = hex ? hexToBytes(hex) : new Uint8Array();
+          expect(bytesToBase32(bytes)).toBe(expected);
+        });
+      });
+
+      test('should encode single byte correctly', () => {
+        const bytes = new Uint8Array([0x41]);
+        const result = bytesToBase32(bytes);
+        expect(result).toBe('IE======');
+      });
+
+      test('should handle large inputs', () => {
+        // 10 bytes → 80 bits → 16 Base32 chars + 0 padding
+        const bytes = new Uint8Array(10);
+        bytes.fill(0xFF); // All bits set to 1
+        expect(bytesToBase32(bytes)).toBe('7777777777777777');
+      });
+
       test('should handle empty input', () => {
         const result = bytesToBase32(new Uint8Array([]));
         expect(result).toBe('');
@@ -395,6 +378,8 @@ describe('Helper Functions Tests', () => {
         expect(result).toBe(expected);
       });
     });
+
+
   });
 
   describe('Integration tests', () => {

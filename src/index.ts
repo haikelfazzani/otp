@@ -10,15 +10,15 @@ export async function generateSecret(length = 20): Promise<string> {
 }
 
 export async function generateHOTP(secretKey: string, options?: HOTPOptions): Promise<string> {
-
-  const defaults = { algorithm: 'SHA-1', digits: 6, counter: 1 };
-  const merged = { ...defaults, ...options } as HOTPOptions;
-
   if (!secretKey || typeof secretKey !== 'string') {
     throw new Error("Secret key must be a non-empty string");
   }
 
-  if (!Number.isInteger(merged.counter) || merged.counter < 0) throw new Error("Counter must be a non-negative integer.");
+  const merged = { algorithm: 'SHA-1' as HmacAlgorithm, digits: 6, counter: 1, ...options };
+
+  if (typeof merged.counter !== 'number' || merged.counter < 0 || merged.counter % 1 !== 0) {
+    throw new Error("Counter must be a non-negative integer (not a float).");
+  }
 
   if (!Number.isInteger(merged.digits) || merged.digits < 1 || merged.digits > 10) {
     throw new Error("Digits must be a positive integer between 1 and 10.");
@@ -44,13 +44,9 @@ export async function generateHOTP(secretKey: string, options?: HOTPOptions): Pr
 
   const secretBytes = base32ToBytes(secretKey);
   const subtle = (await getCrypto()).subtle;
-  const key = await subtle.importKey("raw", secretBytes, {
-    name: "HMAC",
-    hash: { name: merged.algorithm }
-  }, false, ["sign"]);
+  const key = await subtle.importKey("raw", secretBytes, { name: "HMAC", hash: { name: merged.algorithm } }, false, ["sign"]);
   const macBuf = await subtle.sign("HMAC", key, msg);
-  const mac = new Uint8Array(macBuf);
-  return truncate(mac, merged.digits);
+  return truncate(new Uint8Array(macBuf), merged.digits);
 }
 
 export function generateTOTP(secretKey: string, options: Partial<TOTPOptions> = {}): Promise<string> {
@@ -58,8 +54,7 @@ export function generateTOTP(secretKey: string, options: Partial<TOTPOptions> = 
     throw new Error("Secret key must be a non-empty string");
   }
 
-  const defaults = { algorithm: 'SHA-1' as HmacAlgorithm, period: 30, digits: 6, epoch: Date.now() };
-  const merged = { ...defaults, ...options };
+  const merged = { algorithm: 'SHA-1' as HmacAlgorithm, period: 30, digits: 6, epoch: Date.now(), ...options };
 
   if (!Number.isInteger(merged.period) || merged.period <= 0) {
     throw new Error("Period must be a positive integer.");
@@ -74,30 +69,29 @@ export function generateTOTP(secretKey: string, options: Partial<TOTPOptions> = 
 }
 
 /**
+ * RFC 6238 Section 4.1
  * Validates a TOTP token against a secret key, allowing for a window of tolerance.
  * @param token The OTP token to validate.
  * @param secretKey The Base32 encoded secret key.
  * @param options The options for TOTP validation, including the window.
- * @returns A promise that resolves to the delta of the matching window (`-1`, `0`, `1`, etc.) if valid, or `null` if invalid.
+ * @returns A promise that resolves to:
+ *   - `0`    if the token matches the current time period
+ *   - `-1`   if the token matches the previous time period (client clock is behind)
+ *   - `1`    if the token matches the next time period (client clock is ahead)
+ *   - `null` if the token doesn't match any time period within the window
  */
 export async function validate(token: string, secretKey: string, options: Partial<TOTPValidateOptions> = {}): Promise<number | null> {
-  const defaults = { algorithm: 'SHA-1', period: 30, digits: 6, epoch: Date.now(), window: 1 };
-  const merged = { ...defaults, ...options };
+  if (typeof token !== 'string' || !/^\d+$/.test(token)) return null;
 
-  if (typeof token !== 'string' || !/^\d+$/.test(token) || token.length !== merged.digits) {
-    return null;
-  }
+  const merged = { algorithm: 'SHA-1', period: 30, digits: 6, window: 1, ...options };
+  if (token.length !== merged.digits) return null;
 
-  // Import key once for all validations
-  const secretBytes = base32ToBytes(secretKey);
   const subtle = (await getCrypto()).subtle;
-  const key = await subtle.importKey("raw", secretBytes, { name: "HMAC", hash: { name: merged.algorithm } }, false, ["sign"]);
+  const key = await subtle.importKey("raw", base32ToBytes(secretKey), { name: "HMAC", hash: { name: merged.algorithm } }, false, ["sign"]);
   const currentCounter = Math.floor((merged.epoch / 1000) / merged.period);
 
   for (let i = -merged.window; i <= merged.window; i++) {
     const counter = currentCounter + i;
-
-    // Inline HOTP generation without key re-import
     const msg = new Uint8Array(8);
     const high = Math.floor(counter / 0x100000000);
     const low = counter % 0x100000000;
@@ -115,9 +109,7 @@ export async function validate(token: string, secretKey: string, options: Partia
     const mac = new Uint8Array(macBuf);
     const expectedToken = truncate(mac, merged.digits);
 
-    if (timingSafeEqual(expectedToken, token)) {
-      return i;
-    }
+    if (timingSafeEqual(expectedToken, token)) return i;
   }
 
   return null;

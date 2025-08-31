@@ -1,7 +1,7 @@
 {
   "name": "one-time-pass",
   "description": "Zero dependencies Node/Deno/Bun/Browser TOTP and HOTP generator based on RFC 6238 and RFC 4226",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "author": "Haikel Fazzani",
   "private": false,
   "type": "module",
@@ -34,11 +34,15 @@
   ],
   "license": "GPL-3.0-only",
   "keywords": [
+    "Time-Based OTP",
+    "Counter-Based OTP",
     "one time password",
     "totp",
     "hotp",
     "otp",
-    "2fa"
+    "2fa",
+    "Hmac",
+    "Time Window Tolerance"
   ],
   "repository": {
     "type": "git",

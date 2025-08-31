@@ -36,6 +36,26 @@ npm install one-time-pass
 
 ---
 
+Use the library directly in an HTML file via a CDN.
+
+```html
+<script
+  src="https://cdn.jsdelivr.net/npm/one-time-pass/dist/index.umd.js"
+></script>
+<script>
+  (async () => {
+    // The library is available on the `window.otp` object
+    const secret = await window.otp.generateSecret();
+    console.log("Secret:", secret);
+
+    const token = await window.otp.generateTOTP(secret);
+    console.log("Token:", token);
+  })();
+</script>
+```
+
+---
+
 ### 💡 API Usage
 
 The library provides a simple and modern async API.
@@ -138,25 +158,40 @@ type TOTPValidateOptions = TOTPOptions & {
 
 ---
 
-### 🌐 CDN Usage
+## TOTP Validation with Time Window Tolerance
 
-You can also use the library directly in an HTML file via a CDN.
+### Time Window Tolerance
 
-```html
-<script
-  src="https://cdn.jsdelivr.net/npm/one-time-pass/dist/index.umd.js"
-></script>
-<script>
-  (async () => {
-    // The library is available on the `window.otp` object
-    const secret = await window.otp.generateSecret();
-    console.log("Secret:", secret);
+The TOTP (Time-Based One-Time Password) validation includes a **time window
+tolerance** mechanism to handle clock drift between the client and server. Since
+TOTP tokens are time-sensitive, even small differences in system clocks can
+cause valid tokens to be rejected.
 
-    const token = await window.otp.generateTOTP(secret);
-    console.log("Token:", token);
-  })();
-</script>
-```
+### How It Works
+
+The `window` parameter defines how many time steps forward and backward the
+validator will check when validating a token. For example:
+
+- **Window = 1**: Checks 3 time periods (previous, current, next)
+
+### Delta Values
+
+The validation function returns a **delta** value indicating the time
+synchronization status:
+
+| Delta        | Meaning       | Description                                        |
+| ------------ | ------------- | -------------------------------------------------- |
+| `0`          | Perfect sync  | Token matches current time period                  |
+| `-1`         | Client behind | Token matches previous time period                 |
+| `1`          | Client ahead  | Token matches next time period                     |
+| `null`       | Invalid token | No match found within the allowed window           |
+
+### Security Considerations
+
+- **Default window of 1** provides a good balance between usability and security
+- **Larger windows** increase the attack surface and should be used cautiously
+- The delta information can be used for monitoring clock drift across clients
+- Consider implementing rate limiting to prevent brute force attacks
 
 ---
 

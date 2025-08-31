@@ -1,5 +1,6 @@
 const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
 
+// RFC 7231
 export function timingSafeEqual(a: string, b: string): boolean {
   if (a.length !== b.length) {
     let dummy = 0;
@@ -37,6 +38,7 @@ export function truncate(hmacResult: Uint8Array, digits: number): string {
   return otp.toString().padStart(digits, '0');
 }
 
+// RFC 4648
 export function base32ToBytes(key: string): Uint8Array {
   if (!key || typeof key !== 'string') {
     throw new Error("Secret key must be a non-empty string");
@@ -74,6 +76,7 @@ export function base32ToBytes(key: string): Uint8Array {
   return out;
 }
 
+// RFC 4648
 export function bytesToBase32(bytes: Uint8Array): string {
   if (!bytes || bytes.length === 0) return '';
 
