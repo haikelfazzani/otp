@@ -81,13 +81,15 @@ export function generateTOTP(secretKey: string, options: Partial<TOTPOptions> = 
  *   - `null` if the token doesn't match any time period within the window
  */
 export async function validate(token: string, secretKey: string, options: Partial<TOTPValidateOptions> = {}): Promise<number | null> {
+
   if (typeof token !== 'string' || !/^\d+$/.test(token)) return null;
 
-  const merged = { algorithm: 'SHA-1', period: 30, digits: 6, window: 1, ...options };
+  const merged = { algorithm: 'SHA-1', period: 30, digits: 6, epoch: Date.now(), window: 1, ...options };
   if (token.length !== merged.digits) return null;
 
+  const secretBytes = base32ToBytes(secretKey);
   const subtle = (await getCrypto()).subtle;
-  const key = await subtle.importKey("raw", base32ToBytes(secretKey), { name: "HMAC", hash: { name: merged.algorithm } }, false, ["sign"]);
+  const key = await subtle.importKey("raw", secretBytes, { name: "HMAC", hash: { name: merged.algorithm } }, false, ["sign"]);
   const currentCounter = Math.floor((merged.epoch / 1000) / merged.period);
 
   for (let i = -merged.window; i <= merged.window; i++) {
@@ -109,7 +111,9 @@ export async function validate(token: string, secretKey: string, options: Partia
     const mac = new Uint8Array(macBuf);
     const expectedToken = truncate(mac, merged.digits);
 
-    if (timingSafeEqual(expectedToken, token)) return i;
+    if (timingSafeEqual(expectedToken, token)) {
+      return i;
+    }
   }
 
   return null;

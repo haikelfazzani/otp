@@ -1,7 +1,7 @@
 {
   "name": "one-time-pass",
   "description": "Zero dependencies Node/Deno/Bun/Browser TOTP and HOTP generator based on RFC 6238 and RFC 4226",
-  "version": "2.0.5",
+  "version": "2.0.6",
   "author": "Haikel Fazzani",
   "private": false,
   "type": "module",
@@ -14,6 +14,7 @@
     "build": "vite build",
     "clean": "rm -rf dist",
     "test:helpers": "jest tests/helpers.test.ts",
+    "test:validate": "jest tests/validate.test.ts",
     "test": "jest tests/index.test.ts",
     "prepublishOnly": "npm run clean && npm run build && npm run test"
   },

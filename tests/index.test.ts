@@ -1,6 +1,6 @@
 import { describe, expect, test } from '@jest/globals';
 import { generateTOTP, generateHOTP, validate } from '../src/index';
-import { TOTPOptions, HOTPOptions } from '../src/types';
+import { HOTPOptions } from '../src/types';
 
 describe('OTP Generation', () => {
   describe('HOTP (HMAC-based One-Time Password)', () => {
