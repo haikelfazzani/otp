@@ -1,4 +1,3 @@
-// helpers.test.ts
 import { truncate, base32ToBytes, bytesToBase32 } from '../src/helpers';
 
 describe('Helper Functions Tests', () => {

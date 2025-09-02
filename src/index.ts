@@ -1,8 +1,7 @@
-// Node 18+/Deno/Browser TOTP and HOTP generator based on RFC 6238 and RFC 4226
 import { HOTPOptions, HmacAlgorithm, TOTPOptions, TOTPValidateOptions } from './types';
-import { base32ToBytes, bytesToBase32, getCrypto, truncate, timingSafeEqual } from './helpers';
+import { _generateHOTP, bytesToBase32, getCrypto, timingSafeEqual } from './helpers';
 
-export async function generateSecret(length = 20): Promise<string> {
+export async function generateSecret(length = 160): Promise<string> {
   const crypto = await getCrypto();
   const randomBytes = new Uint8Array(length);
   crypto.getRandomValues(randomBytes);
@@ -24,29 +23,10 @@ export async function generateHOTP(secretKey: string, options?: HOTPOptions): Pr
     throw new Error("Digits must be a positive integer between 1 and 10.");
   }
 
-  // RFC 4226: 8-byte big-endian counter
-  const msg = new Uint8Array(8);
-
-  // Convert number to 8-byte big-endian array without BigInt
-  // Handle the full 64-bit range properly
-  const high = Math.floor(merged.counter / 0x100000000); // Upper 32 bits
-  const low = merged.counter % 0x100000000; // Lower 32 bits
-
-  // Fill the 8-byte array in big-endian order
-  msg[0] = (high >>> 24) & 0xff;
-  msg[1] = (high >>> 16) & 0xff;
-  msg[2] = (high >>> 8) & 0xff;
-  msg[3] = high & 0xff;
-  msg[4] = (low >>> 24) & 0xff;
-  msg[5] = (low >>> 16) & 0xff;
-  msg[6] = (low >>> 8) & 0xff;
-  msg[7] = low & 0xff;
-
-  const secretBytes = base32ToBytes(secretKey);
-  const subtle = (await getCrypto()).subtle;
-  const key = await subtle.importKey("raw", secretBytes, { name: "HMAC", hash: { name: merged.algorithm } }, false, ["sign"]);
-  const macBuf = await subtle.sign("HMAC", key, msg);
-  return truncate(new Uint8Array(macBuf), merged.digits);
+  return _generateHOTP(secretKey, merged.counter, {
+    digits: merged.digits,
+    algorithm: merged.algorithm
+  });
 }
 
 export function generateTOTP(secretKey: string, options: Partial<TOTPOptions> = {}): Promise<string> {
@@ -81,35 +61,20 @@ export function generateTOTP(secretKey: string, options: Partial<TOTPOptions> = 
  *   - `null` if the token doesn't match any time period within the window
  */
 export async function validate(token: string, secretKey: string, options: Partial<TOTPValidateOptions> = {}): Promise<number | null> {
-
   if (typeof token !== 'string' || !/^\d+$/.test(token)) return null;
 
-  const merged = { algorithm: 'SHA-1', period: 30, digits: 6, epoch: Date.now(), window: 1, ...options };
+  const merged = { algorithm: 'SHA-1' as HmacAlgorithm, period: 30, digits: 6, epoch: Date.now(), window: 1, ...options };
   if (token.length !== merged.digits) return null;
 
-  const secretBytes = base32ToBytes(secretKey);
-  const subtle = (await getCrypto()).subtle;
-  const key = await subtle.importKey("raw", secretBytes, { name: "HMAC", hash: { name: merged.algorithm } }, false, ["sign"]);
   const currentCounter = Math.floor((merged.epoch / 1000) / merged.period);
 
   for (let i = -merged.window; i <= merged.window; i++) {
     const counter = currentCounter + i;
-    const msg = new Uint8Array(8);
-    const high = Math.floor(counter / 0x100000000);
-    const low = counter % 0x100000000;
 
-    msg[0] = (high >>> 24) & 0xff;
-    msg[1] = (high >>> 16) & 0xff;
-    msg[2] = (high >>> 8) & 0xff;
-    msg[3] = high & 0xff;
-    msg[4] = (low >>> 24) & 0xff;
-    msg[5] = (low >>> 16) & 0xff;
-    msg[6] = (low >>> 8) & 0xff;
-    msg[7] = low & 0xff;
-
-    const macBuf = await subtle.sign("HMAC", key, msg);
-    const mac = new Uint8Array(macBuf);
-    const expectedToken = truncate(mac, merged.digits);
+    const expectedToken = await _generateHOTP(secretKey, counter, {
+      digits: merged.digits,
+      algorithm: merged.algorithm,
+    });
 
     if (timingSafeEqual(expectedToken, token)) {
       return i;

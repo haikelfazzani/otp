@@ -1,6 +1,7 @@
+import { HmacAlgorithm } from './types';
+
 const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
 
-// RFC 7231
 export function timingSafeEqual(a: string, b: string): boolean {
   if (a.length !== b.length) {
     let dummy = 0;
@@ -117,4 +118,18 @@ export async function getCrypto(): Promise<Crypto> {
   } catch { }
 
   throw new Error('Web Crypto API (subtle) is not available in this environment');
+}
+
+export async function _generateHOTP(secretKey: string, counter: number | bigint, options: { digits: number; algorithm: HmacAlgorithm }): Promise<string> {
+  const secretBytes = base32ToBytes(secretKey);
+  const subtle = (await getCrypto()).subtle;
+  const key = await subtle.importKey("raw", secretBytes, { name: "HMAC", hash: { name: options.algorithm } }, false, ["sign"]);
+
+  // Use DataView and BigInt for RFC compliance.
+  const msg = new Uint8Array(8);
+  const view = new DataView(msg.buffer);
+  view.setBigUint64(0, BigInt(counter), false); // false for big-endian
+
+  const macBuf = await subtle.sign("HMAC", key, msg);
+  return truncate(new Uint8Array(macBuf), options.digits);
 }
