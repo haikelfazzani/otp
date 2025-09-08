@@ -1,6 +1,6 @@
 {
   "name": "one-time-pass",
-  "version": "2.0.7",
+  "version": "2.0.8",
   "exports": {
     ".": "./dist/index.js"
   },

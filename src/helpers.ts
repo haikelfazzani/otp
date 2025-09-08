@@ -2,7 +2,7 @@ import { HmacAlgorithm } from './types';
 
 const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
 
-export function timingSafeEqual(a: string, b: string): boolean {
+export function timingEqual(a: string, b: string): boolean {
   if (a.length !== b.length) {
     let dummy = 0;
     for (let i = 0; i < Math.max(a.length, b.length); i++) {

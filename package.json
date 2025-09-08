@@ -1,7 +1,7 @@
 {
   "name": "one-time-pass",
   "description": "Zero dependencies Node/Deno/Bun/Browser TOTP and HOTP generator based on RFC 6238 and RFC 4226",
-  "version": "2.0.7",
+  "version": "2.0.8",
   "author": "Haikel Fazzani",
   "private": false,
   "type": "module",
