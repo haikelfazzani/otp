@@ -1,4 +1,5 @@
-import { truncate, base32ToBytes, bytesToBase32 } from '../src/helpers';
+import { truncate } from '../src/helpers';
+import {base32ToBytes, bytesToBase32} from '../src/base32';
 
 describe('truncate', () => {
   describe('Valid inputs', () => {
