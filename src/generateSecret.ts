@@ -1,4 +1,5 @@
-import { _generateHOTP, bytesToBase32, getCrypto } from './helpers';
+import { bytesToBase32 } from './base32';
+import { _generateHOTP, getCrypto } from './helpers';
 
 export async function generateSecret(length = 160): Promise<string> {
   if (!Number.isInteger(length) || length < 1 || length > 1024) {
