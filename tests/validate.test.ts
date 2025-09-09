@@ -1,5 +1,5 @@
 import { describe, expect, test } from '@jest/globals';
-import { generateTOTP, generateSecret, validate } from '../src/index';
+import { generateTOTP, generateSecret, validate } from '../index';
 
 describe('validate', () => {
   let secret: string;
@@ -93,5 +93,4 @@ describe('validate: OTP Generation', () => {
   test('token doesn\'t match any time period within the window', async () => {
     expect(await validate("287082", 'JBSWY3DPEHPK3PXP', { window: 1 })).toBe(null)
   });
-
 });
