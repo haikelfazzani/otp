@@ -54,7 +54,7 @@ export async function _generateHOTP(
   const secretBytes = base32ToBytes(secretKey);
   const key = await (await getCrypto()).subtle.importKey(
     "raw",
-    secretBytes, // Uint8Array is BufferSource
+    secretBytes as BufferSource, // Uint8Array is BufferSource
     { name: "HMAC", hash: { name: options.algorithm } },
     false,
     ["sign"]
