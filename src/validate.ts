@@ -67,7 +67,7 @@ export async function validate(token: string, secretKey: string, options: Partia
     });
 
     if (timingEqual(expectedToken, token)) {
-      return i;
+      return i === 0 ? 0 : i;
     }
   }
 
