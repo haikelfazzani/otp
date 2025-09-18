@@ -1,7 +1,7 @@
 {
   "name": "one-time-pass",
   "description": "Zero dependencies Node/Deno/Bun/Browser TOTP and HOTP generator based on RFC 6238 and RFC 4226",
-  "version": "2.0.8",
+  "version": "2.0.10",
   "author": "Haikel Fazzani",
   "private": false,
   "type": "module",
@@ -17,7 +17,8 @@
     "test:validate": "jest tests/validate.test.ts",
     "test:main": "jest tests/index.test.ts",
     "test": "npm run test:main && npm run test:validate && npm run test:helpers",
-    "prepublishOnly": "npm run clean && npm run build && npm run test"
+    "prepublishOnly": "npm run clean && npm run build && npm run test",
+    "jsr:publish": "npx jsr publish --allow-dirty"
   },
   "devDependencies": {
     "@jest/globals": "^30.0.5",
@@ -34,7 +35,7 @@
   "files": [
     "dist"
   ],
-  "license": "GPL-3.0-only",
+  "license": "MIT",
   "keywords": [
     "Time-Based OTP",
     "Counter-Based OTP",

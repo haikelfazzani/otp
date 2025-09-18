@@ -213,5 +213,5 @@ issues, please feel free to open an issue or create a pull request.
 
 ### 📜 License
 
-This project is licensed under the **GNU General Public License v3.0**. See the
-[LICENSE](https://www.google.com/search?q=LICENSE) file for details.
+This project is licensed under the **MIR License**. See the
+[LICENSE](LICENSE.md) file for details.

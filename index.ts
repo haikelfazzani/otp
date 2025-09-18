@@ -3,4 +3,9 @@ export { generateSecret } from './src/generateSecret'
 export { generateTOTP } from './src/generateTOTP'
 export { validate } from './src/validate'
 
-export type { HOTPOptions, HmacAlgorithm, TOTPOptions, TOTPValidateOptions } from './src/types'
+export type {
+  HOTPOptions,
+  HmacAlgorithm,
+  TOTPOptions,
+  TOTPValidateOptions
+} from './src/types'

@@ -1,10 +1,24 @@
 {
-  "name": "one-time-pass",
-  "version": "2.0.8",
-  "exports": {
-    ".": "./dist/index.js"
-  },
+  "name": "@wutility/one-time-pass",
+  "version": "2.0.10",
+  "license": "MIT",
+  "exports": "./index.ts",
   "publish": {
-    "include": ["./*.md", "./dist/index.js", "./dist/types/index.d.ts"]
+    "exclude": [
+      "node_modules/",
+      "tests/",
+      "dist/",
+      "docs/",
+      ".vscode/",
+      ".npmignore",
+      ".gitignore",
+      "vite.config.ts",
+      "jest.config.ts",
+      "package.json",
+      "package-lock.json",
+      "test.ts",
+      "tsconfig.build.json",
+      "tsconfig.json"
+    ]
   }
 }

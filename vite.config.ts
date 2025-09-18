@@ -3,6 +3,14 @@ import dts from 'vite-plugin-dts';
 import path from 'node:path';
 
 export default defineConfig({
+  plugins: [
+    dts({
+      insertTypesEntry: true,
+      tsconfigPath: './tsconfig.json',
+      outDir: "dist/types",
+      rollupTypes: true
+    }),
+  ],
   build: {
     lib: {
       entry: path.resolve(__dirname, 'index.ts'),
@@ -11,13 +19,8 @@ export default defineConfig({
       formats: ['es', 'umd'],
     },
     sourcemap: false,
-  },
-  plugins: [
-    dts({
-      insertTypesEntry: true,
-      outDir: "dist/types",
-      copyDtsFiles: true,
-      // rollupTypes:true
-    }),
-  ]
+    rollupOptions: {
+      external: ["node:crypto"],
+    },
+  }
 });
